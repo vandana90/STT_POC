@@ -1,0 +1,46 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId 'com.stt.stt'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        setProperty("archivesBaseName", getCurrentApplicationName())
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+}
+
+def getCurrentFlavor() {
+    return getGradle().getStartParameter().getTaskRequests().toString()
+}
+
+def getCurrentApplicationName() {
+    def currFlavor = getCurrentFlavor()
+    def outStr = ''
+    android.productFlavors.all { flavor ->
+        if (flavor.name == currFlavor)
+            outStr = flavor.versionNameSuffix + flavor.versionName + "(" + flavor.versionCode + ")"
+    }
+    return outStr
+}
+
+
+dependencies {
+    implementation(name:'speechkit-2.2.4', ext:'aar')
+    // support libraries
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:design:$rootProject.supportLibraryVersion"
+}
